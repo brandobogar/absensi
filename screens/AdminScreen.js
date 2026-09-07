@@ -13,6 +13,7 @@ import {
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import PetaModal from "../components/PetaModal";
 import SesiModal from "../components/SesiModal";
+import ManajemenPegawaiScreen from "../screens/ManajemenPegawaiScreen";
 
 // Helper konversi
 const menitKeJam = (menit) => {
@@ -80,6 +81,8 @@ export default function AdminScreen({ onLogout, callApi }) {
     keySelesai: "",
   });
   const [savingJam, setSavingJam] = useState(false);
+
+  const [showManajemenPegawai, setShowManajemenPegawai] = useState(false);
 
   const fetchAbsensiAdmin = async () => {
     setLoading(true);
@@ -250,6 +253,15 @@ export default function AdminScreen({ onLogout, callApi }) {
   const totalApproved = absensiList.filter(
     (item) => item[6] === "APPROVED",
   ).length;
+
+  if (showManajemenPegawai) {
+    return (
+      <ManajemenPegawaiScreen
+        callApi={callApi}
+        onKembali={() => setShowManajemenPegawai(false)}
+      />
+    );
+  }
 
   return (
     <>
@@ -496,6 +508,12 @@ export default function AdminScreen({ onLogout, callApi }) {
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Aksi</Text>
           <TouchableOpacity
+            style={styles.manajemenButton}
+            onPress={() => setShowManajemenPegawai(true)}
+          >
+            <Text style={styles.manajemenButtonText}>👥 Manajemen Pegawai</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={styles.exportButton}
             onPress={handleExport}
             disabled={exporting}
@@ -694,4 +712,18 @@ const styles = StyleSheet.create({
     borderColor: "#bfdbfe",
   },
   ubahButtonText: { fontSize: 12, color: "#2563eb", fontWeight: "600" },
+  manajemenButton: {
+    backgroundColor: "#f0fdf4",
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: "center",
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: "#86efac",
+  },
+  manajemenButtonText: {
+    color: "#16a34a",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
 });
