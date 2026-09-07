@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -41,8 +41,14 @@ export default function LoginScreen({ onLoginSuccess }) {
         const result = await callApi("loginPegawai", { username, password });
         setLoading(false);
 
-        if (result && result.nama) {
-          onLoginSuccess(result); // Kirim data pegawai ke komponen utama
+        if (result && result.status === "nonaktif") {
+          Alert.alert(
+            "Akun Dinonaktifkan",
+            result.message ||
+              "Akun Anda sedang dinonaktifkan. Silakan hubungi administrator.",
+          );
+        } else if (result && result.nama) {
+          onLoginSuccess(result);
         } else {
           Alert.alert("Gagal", "Username atau password salah!");
         }
@@ -102,12 +108,46 @@ export default function LoginScreen({ onLoginSuccess }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#eff6ff', justifyContent: 'center', padding: 20 },
-  card: { backgroundColor: '#ffffff', borderRadius: 20, padding: 24, elevation: 4 },
-  title: { fontSize: 24, fontWeight: 'bold', color: '#1f2937', textAlign: 'center', marginBottom: 4 },
-  subtitle: { fontSize: 14, color: '#6b7280', textAlign: 'center', marginBottom: 24 },
-  label: { fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 6 },
-  input: { borderWidth: 1, borderColor: '#d1d5db', borderRadius: 12, padding: 12, fontSize: 14, marginBottom: 16, backgroundColor: '#fff' },
-  button: { backgroundColor: '#2563eb', padding: 14, borderRadius: 12, alignItems: 'center' },
-  buttonText: { color: '#ffffff', fontWeight: 'bold', fontSize: 16 },
+  container: {
+    flex: 1,
+    backgroundColor: "#eff6ff",
+    justifyContent: "center",
+    padding: 20,
+  },
+  card: {
+    backgroundColor: "#ffffff",
+    borderRadius: 20,
+    padding: 24,
+    elevation: 4,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#1f2937",
+    textAlign: "center",
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: "#6b7280",
+    textAlign: "center",
+    marginBottom: 24,
+  },
+  label: { fontSize: 14, fontWeight: "500", color: "#374151", marginBottom: 6 },
+  input: {
+    borderWidth: 1,
+    borderColor: "#d1d5db",
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 14,
+    marginBottom: 16,
+    backgroundColor: "#fff",
+  },
+  button: {
+    backgroundColor: "#2563eb",
+    padding: 14,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  buttonText: { color: "#ffffff", fontWeight: "bold", fontSize: 16 },
 });

@@ -1,0 +1,31 @@
+Saya akan buat seperti ini:
+
+Tahap 1 — sekarang
+
+✅ Manajemen pegawai
+✅ Status aktif/nonaktif
+✅ Bypass radius
+✅ Bypass sesi
+✅ Tambah pegawai
+✅ Reset password
+✅ Blokir login akun nonaktif
+
+Tahap 2 — paling berguna
+
+🔎 Pencarian pegawai
+✏️ Edit data pegawai
+📊 Statistik pegawai
+👤 Tampilkan nama + NIP dengan lebih jelas
+
+Tahap 3 — keamanan
+
+🔐 Ganti password sendiri
+🔑 Password sementara saat reset
+📜 Riwayat aktivitas admin
+
+Tahap 4 — monitoring
+
+📅 Rekap absensi per pegawai
+📍 Monitoring lokasi
+⏰ Monitoring keterlambatan
+📊 Statistik kehadiran
