@@ -4,10 +4,10 @@ import {
   Text,
   View,
   TouchableOpacity,
-  SafeAreaView,
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginScreen from "./screens/LoginScreen";
 import BerandaScreen from "./screens/BerandaScreen";
@@ -20,15 +20,13 @@ export default function App() {
   const [userData, setUserData] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [activeTab, setActiveTab] = useState("beranda");
-  const [initializing, setInitializing] = useState(true); // Loading saat cek sesi awal
+  const [initializing, setInitializing] = useState(true);
 
-  // Cek apakah ada sesi login yang tersimpan saat aplikasi pertama kali dibuka
   useEffect(() => {
     const loadSession = async () => {
       try {
         const savedUser = await AsyncStorage.getItem("@user_session");
         const savedIsAdmin = await AsyncStorage.getItem("@is_admin");
-
         if (savedUser) {
           setUserData(JSON.parse(savedUser));
           setIsAdmin(savedIsAdmin === "true");
@@ -39,7 +37,6 @@ export default function App() {
         setInitializing(false);
       }
     };
-
     loadSession();
   }, []);
 
@@ -54,20 +51,15 @@ export default function App() {
       return json;
     } catch (error) {
       console.error(error);
-      Alert.alert(
-        "Koneksi Gagal",
-        "Terjadi kesalahan saat menghubungi server.",
-      );
+      Alert.alert("Koneksi Gagal", "Terjadi kesalahan saat menghubungi server.");
       return null;
     }
   };
 
-  // Handler saat login berhasil & simpan ke penyimpanan lokal
   const handleLoginSuccess = async (data) => {
     const adminStatus = data && data.role === "admin";
     setIsAdmin(adminStatus);
     setUserData(data);
-
     try {
       await AsyncStorage.setItem("@user_session", JSON.stringify(data));
       await AsyncStorage.setItem("@is_admin", adminStatus ? "true" : "false");
@@ -76,7 +68,6 @@ export default function App() {
     }
   };
 
-  // Handler Logout & hapus penyimpanan lokal
   const handleLogout = async () => {
     try {
       await AsyncStorage.removeItem("@user_session");
@@ -84,104 +75,99 @@ export default function App() {
     } catch (error) {
       console.error("Gagal menghapus sesi:", error);
     }
-
     setUserData(null);
     setIsAdmin(false);
     setActiveTab("beranda");
   };
 
-  // Tampilkan indikator loading saat memverifikasi sesi awal
+  // Loading awal
   if (initializing) {
     return (
-      <View style={[styles.container, styles.centerLoading]}>
-        <ActivityIndicator size="large" color="#2563eb" />
-      </View>
+      <SafeAreaProvider>
+        <View style={[styles.container, styles.centerLoading]}>
+          <ActivityIndicator size="large" color="#2563eb" />
+        </View>
+      </SafeAreaProvider>
     );
   }
 
+  // Halaman Login
   if (!userData) {
     return (
-      <LoginScreen onLoginSuccess={handleLoginSuccess} callApi={callApi} />
+      <SafeAreaProvider>
+        <LoginScreen onLoginSuccess={handleLoginSuccess} callApi={callApi} />
+      </SafeAreaProvider>
     );
   }
 
+  // Halaman Admin
   if (isAdmin) {
     return (
-      <SafeAreaView style={styles.container}>
-        <AdminScreen onLogout={handleLogout} callApi={callApi} />
-      </SafeAreaView>
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+          <AdminScreen onLogout={handleLogout} callApi={callApi} />
+        </SafeAreaView>
+      </SafeAreaProvider>
     );
   }
 
+  // Halaman Pegawai
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        {activeTab === "beranda" && (
-          <BerandaScreen
-            userData={userData}
-            onLogout={handleLogout}
-            callApi={callApi}
-          />
-        )}
-        {activeTab === "absen" && (
-          <AbsenScreen
-            userData={userData}
-            onAbsenSuccess={() => setActiveTab("beranda")}
-            callApi={callApi}
-          />
-        )}
-        {activeTab === "riwayat" && (
-          <RiwayatScreen userData={userData} callApi={callApi} />
-        )}
-      </View>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <View style={styles.content}>
+          {activeTab === "beranda" && (
+            <BerandaScreen
+              userData={userData}
+              onLogout={handleLogout}
+              callApi={callApi}
+            />
+          )}
+          {activeTab === "absen" && (
+            <AbsenScreen
+              userData={userData}
+              onAbsenSuccess={() => setActiveTab("beranda")}
+              callApi={callApi}
+            />
+          )}
+          {activeTab === "riwayat" && (
+            <RiwayatScreen userData={userData} callApi={callApi} />
+          )}
+        </View>
 
-      <View style={styles.navbar}>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => setActiveTab("beranda")}
-        >
-          <Text style={{ fontSize: 18 }}>🏠</Text>
-          <Text
-            style={[
-              styles.navText,
-              activeTab === "beranda" && styles.activeNavText,
-            ]}
+        <View style={styles.navbar}>
+          <TouchableOpacity
+            style={styles.navItem}
+            onPress={() => setActiveTab("beranda")}
           >
-            Beranda
-          </Text>
-        </TouchableOpacity>
+            <Text style={{ fontSize: 18 }}>🏠</Text>
+            <Text style={[styles.navText, activeTab === "beranda" && styles.activeNavText]}>
+              Beranda
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => setActiveTab("absen")}
-        >
-          <Text style={{ fontSize: 18 }}>📍</Text>
-          <Text
-            style={[
-              styles.navText,
-              activeTab === "absen" && styles.activeNavText,
-            ]}
+          <TouchableOpacity
+            style={styles.navItem}
+            onPress={() => setActiveTab("absen")}
           >
-            Absen
-          </Text>
-        </TouchableOpacity>
+            <Text style={{ fontSize: 18 }}>📍</Text>
+            <Text style={[styles.navText, activeTab === "absen" && styles.activeNavText]}>
+              Absen
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => setActiveTab("riwayat")}
-        >
-          <Text style={{ fontSize: 18 }}>📅</Text>
-          <Text
-            style={[
-              styles.navText,
-              activeTab === "riwayat" && styles.activeNavText,
-            ]}
+          <TouchableOpacity
+            style={styles.navItem}
+            onPress={() => setActiveTab("riwayat")}
           >
-            Riwayat
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+            <Text style={{ fontSize: 18 }}>📅</Text>
+            <Text style={[styles.navText, activeTab === "riwayat" && styles.activeNavText]}>
+              Riwayat
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 

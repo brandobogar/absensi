@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { callApi } from '../api';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  Image,
+} from "react-native";
+import { callApi } from "../api";
 
 export default function LoginScreen({ onLoginSuccess }) {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-const handleLogin = async () => {
+  const handleLogin = async () => {
     if (!username || !password) {
-      Alert.alert('Error', 'Username dan password wajib diisi!');
+      Alert.alert("Error", "Username dan password wajib diisi!");
       return;
     }
 
@@ -17,31 +25,31 @@ const handleLogin = async () => {
 
     try {
       // Cek apakah yang mencoba login adalah admin
-      if (username.toLowerCase() === 'admin') {
-        const result = await callApi('loginAdmin', { username, password });
+      if (username.toLowerCase() === "admin") {
+        const result = await callApi("loginAdmin", { username, password });
         setLoading(false);
 
         // Sesuaikan dengan respon dari loginAdmin (misal: { status: true })
         if (result && result.status === true) {
           // Kirim data khusus admin ke komponen utama
-          onLoginSuccess({ nama: 'Administrator', role: 'admin' }); 
+          onLoginSuccess({ nama: "Administrator", role: "admin" });
         } else {
-          Alert.alert('Gagal', 'Username atau password admin salah!');
+          Alert.alert("Gagal", "Username atau password admin salah!");
         }
       } else {
         // Jika bukan admin, jalankan login pegawai biasa
-        const result = await callApi('loginPegawai', { username, password });
+        const result = await callApi("loginPegawai", { username, password });
         setLoading(false);
 
         if (result && result.nama) {
           onLoginSuccess(result); // Kirim data pegawai ke komponen utama
         } else {
-          Alert.alert('Gagal', 'Username atau password salah!');
+          Alert.alert("Gagal", "Username atau password salah!");
         }
       }
     } catch (error) {
       setLoading(false);
-      Alert.alert('Error', 'Terjadi kesalahan koneksi ke server.');
+      Alert.alert("Error", "Terjadi kesalahan koneksi ke server.");
       console.error(error);
     }
   };
@@ -49,6 +57,15 @@ const handleLogin = async () => {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
+        <Image
+          source={{ uri: "https://i.ibb.co.com/Mk9qqxcG/logo-daerah-copy.png" }}
+          style={{
+            width: 80,
+            height: 80,
+            alignSelf: "center",
+            marginBottom: 16,
+          }}
+        />
         <Text style={styles.title}>Absensi PPPK</Text>
         <Text style={styles.subtitle}>Inspektorat Kabupaten Sangihe</Text>
 
@@ -70,8 +87,14 @@ const handleLogin = async () => {
           onChangeText={setPassword}
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>{loading ? 'Memverifikasi...' : 'Login'}</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>
+            {loading ? "Memverifikasi..." : "Login"}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
