@@ -39,6 +39,7 @@ export default function LoginScreen({ onLoginSuccess }) {
       } else {
         // Jika bukan admin, jalankan login pegawai biasa
         const result = await callApi("loginPegawai", { username, password });
+        console.log("HASIL LOGIN PEGAWAI:", result);
         setLoading(false);
 
         if (result && result.status === "nonaktif") {

@@ -51,12 +51,16 @@ export default function App() {
       return json;
     } catch (error) {
       console.error(error);
-      Alert.alert("Koneksi Gagal", "Terjadi kesalahan saat menghubungi server.");
+      Alert.alert(
+        "Koneksi Gagal",
+        "Terjadi kesalahan saat menghubungi server.",
+      );
       return null;
     }
   };
 
   const handleLoginSuccess = async (data) => {
+    console.log("DATA MASUK APP:", data);
     const adminStatus = data && data.role === "admin";
     setIsAdmin(adminStatus);
     setUserData(data);
@@ -65,6 +69,16 @@ export default function App() {
       await AsyncStorage.setItem("@is_admin", adminStatus ? "true" : "false");
     } catch (error) {
       console.error("Gagal menyimpan sesi:", error);
+    }
+  };
+
+  const handleProfileUpdated = async (updatedData) => {
+    setUserData(updatedData);
+
+    try {
+      await AsyncStorage.setItem("@user_session", JSON.stringify(updatedData));
+    } catch (error) {
+      console.error("Gagal menyimpan perubahan profile:", error);
     }
   };
 
@@ -104,7 +118,7 @@ export default function App() {
   if (isAdmin) {
     return (
       <SafeAreaProvider>
-        <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
           <AdminScreen onLogout={handleLogout} callApi={callApi} />
         </SafeAreaView>
       </SafeAreaProvider>
@@ -114,13 +128,14 @@ export default function App() {
   // Halaman Pegawai
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
         <View style={styles.content}>
           {activeTab === "beranda" && (
             <BerandaScreen
               userData={userData}
               onLogout={handleLogout}
               callApi={callApi}
+              onProfileUpdated={handleProfileUpdated}
             />
           )}
           {activeTab === "absen" && (
@@ -141,7 +156,12 @@ export default function App() {
             onPress={() => setActiveTab("beranda")}
           >
             <Text style={{ fontSize: 18 }}>🏠</Text>
-            <Text style={[styles.navText, activeTab === "beranda" && styles.activeNavText]}>
+            <Text
+              style={[
+                styles.navText,
+                activeTab === "beranda" && styles.activeNavText,
+              ]}
+            >
               Beranda
             </Text>
           </TouchableOpacity>
@@ -151,7 +171,12 @@ export default function App() {
             onPress={() => setActiveTab("absen")}
           >
             <Text style={{ fontSize: 18 }}>📍</Text>
-            <Text style={[styles.navText, activeTab === "absen" && styles.activeNavText]}>
+            <Text
+              style={[
+                styles.navText,
+                activeTab === "absen" && styles.activeNavText,
+              ]}
+            >
               Absen
             </Text>
           </TouchableOpacity>
@@ -161,7 +186,12 @@ export default function App() {
             onPress={() => setActiveTab("riwayat")}
           >
             <Text style={{ fontSize: 18 }}>📅</Text>
-            <Text style={[styles.navText, activeTab === "riwayat" && styles.activeNavText]}>
+            <Text
+              style={[
+                styles.navText,
+                activeTab === "riwayat" && styles.activeNavText,
+              ]}
+            >
               Riwayat
             </Text>
           </TouchableOpacity>
@@ -186,5 +216,5 @@ const styles = StyleSheet.create({
   },
   navItem: { alignItems: "center", justifyContent: "center", flex: 1 },
   navText: { fontSize: 11, color: "#9ca3af", marginTop: 2 },
-  activeNavText: { color: "#2563eb", fontWeight: "bold" },
+  activeNavText: { color: "#3a60b1", fontWeight: "bold" },
 });
