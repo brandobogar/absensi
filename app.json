@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "absensi",
+    "name": "Absensi",
     "slug": "absensi",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,9 +12,9 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/logo-daerah.png",
+        "backgroundImage": "./assets/logo-daerah.png",
+        "monochromeImage": "./assets/logo-daerah.png"
       },
       "package": "com.brandobogar.absensi"
     },
